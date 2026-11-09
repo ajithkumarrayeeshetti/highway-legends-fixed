@@ -1,0 +1,218 @@
+@import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
+
+@layer base {
+  :root {
+    --bg-primary: #08090D;
+    --bg-secondary: #11141B;
+    --bg-card: #171B24;
+    --racing-red: #FF3434;
+    --racing-orange: #FF8A32;
+    --electric-blue: #27B9FF;
+    --text-primary: #FFFFFF;
+    --text-secondary: #A1A8B5;
+    --text-muted: #687080;
+    --status-success: #35D58A;
+    --status-warning: #FFB547;
+  }
+
+  body {
+    background-color: #08090D;
+    color: #FFFFFF;
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+  }
+}
+
+.font-racing {
+  font-family: 'Barlow Condensed', 'Orbitron', -apple-system, sans-serif;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.font-speed {
+  font-family: 'Orbitron', monospace;
+  font-variant-numeric: tabular-nums;
+}
+
+.font-mono-nums {
+  font-family: 'JetBrains Mono', monospace;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Racing Glass Panel */
+.racing-panel {
+  background: rgba(23, 27, 36, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.45);
+}
+
+.racing-panel-glow {
+  background: linear-gradient(135deg, rgba(23, 27, 36, 0.95), rgba(17, 20, 27, 0.95));
+  border: 1px solid rgba(255, 52, 52, 0.25);
+  box-shadow: 0 0 24px -4px rgba(255, 52, 52, 0.2);
+}
+
+/* Subtle carbon texture pattern */
+.bg-carbon {
+  background-color: #0d0f14;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 0);
+  background-size: 8px 8px;
+}
+
+/* Angular racing cuts */
+.clip-racing-corner {
+  clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 14px 100%, 0 calc(100% - 14px));
+}
+
+.clip-racing-skew {
+  clip-path: polygon(10px 0%, 100% 0%, calc(100% - 10px) 100%, 0% 100%);
+}
+
+/* Racing Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes pulseGlow {
+  0%, 100% {
+    box-shadow: 0 0 20px -2px rgba(255, 52, 52, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 35px 2px rgba(255, 52, 52, 0.6);
+  }
+}
+
+.animate-pulseGlow {
+  animation: pulseGlow 2.5s infinite ease-in-out;
+}
+
+/* Custom Scrollbar for gaming UI */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #08090D;
+}
+::-webkit-scrollbar-thumb {
+  background: #1e2430;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #FF3434;
+}
+
+/* ==========================================================================
+   Racing HUD — responsive touch-control layout
+   --------------------------------------------------------------------------
+   Touch controls are shown based on INPUT TYPE / small viewport instead of
+   the Tailwind `md` (768px) width breakpoint. Wide landscape phones are
+   >= 768 CSS px wide, so the old `md:hidden` rule hid every touch button
+   exactly when the device was rotated.
+   ========================================================================== */
+:root {
+  --hl-btn: 64px;          /* steering button size  */
+  --hl-btn-sm: 48px;       /* brake / nitro size    */
+  --hl-gap: 10px;
+  /* Minimum margins keep controls clear of rounded / curved screen edges even
+     on Android browsers that report env(safe-area-inset-*) as 0. */
+  --hl-pad-left: max(env(safe-area-inset-left, 0px), 16px);
+  --hl-pad-right: max(env(safe-area-inset-right, 0px), 16px);
+  --hl-pad-top: max(env(safe-area-inset-top, 0px), 12px);
+  --hl-pad-bottom: max(env(safe-area-inset-bottom, 0px), 16px);
+}
+
+/* Landscape phones / short viewports: wider edge margin for curved displays
+   and slightly smaller buttons so the right-hand stack never meets the gauge. */
+@media (orientation: landscape) and (max-height: 520px) {
+  :root {
+    --hl-btn: 56px;
+    --hl-btn-sm: 44px;
+    --hl-gap: 8px;
+    --hl-pad-left: max(env(safe-area-inset-left, 0px), 28px);
+    --hl-pad-right: max(env(safe-area-inset-right, 0px), 28px);
+    --hl-pad-bottom: max(env(safe-area-inset-bottom, 0px), 12px);
+  }
+}
+
+.hl-hud-root {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  background: #000;
+  overflow: hidden;
+  touch-action: none;
+  overscroll-behavior: none;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Only the control layer; each button group re-enables pointer events. */
+.hl-touch-layer {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 40;
+  display: none;
+  align-items: flex-end;
+  justify-content: space-between;
+  pointer-events: none;
+  padding: 0 var(--hl-pad-right) var(--hl-pad-bottom) var(--hl-pad-left);
+}
+.hl-touch-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--hl-gap);
+  pointer-events: auto;
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+.hl-touch-center {
+  position: absolute;
+  left: 50%;
+  bottom: var(--hl-pad-bottom);
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+.hl-btn-lg { width: var(--hl-btn); height: var(--hl-btn); }
+.hl-btn-sm { width: var(--hl-btn-sm); height: var(--hl-btn-sm); }
+
+.hl-desktop-only { display: none; }
+
+/* Touch device (coarse primary pointer, or no hover) OR small viewport */
+@media (pointer: coarse), (hover: none), (max-width: 767px) {
+  .hl-touch-layer { display: flex; }
+  .hl-touch-only-hide { display: none !important; }
+}
+/* Mouse + keyboard device with a large viewport */
+@media (pointer: fine) and (hover: hover) and (min-width: 768px) {
+  .hl-desktop-only { display: flex; }
+}
+
+/* Short landscape: drop the secondary HUD cards that would collide with the
+   button columns. */
+@media (orientation: landscape) and (max-height: 520px) {
+  .hl-short-hide { display: none !important; }
+}
+/* Very narrow portrait: shrink centre nitro reserve so it never meets buttons */
+@media (max-width: 400px) {
+  .hl-nitro-pill-bar { width: 3.5rem !important; }
+}
